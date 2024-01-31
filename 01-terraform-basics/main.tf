@@ -1,6 +1,7 @@
 provider "aws" {
     region = "us-east-1"
-
+    access_key = "AKIAWHMZVV7EGHRUGOPI"
+    secret_key = "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"
   
 }
 
@@ -16,13 +17,6 @@ resource "aws_iam_user" "my_iam_user" {
     name = "my_iam_user_abc_updated"
 }
 
-output "my_s3_bucket_complete_details" {
-    value =  aws_s3_bucket.my_s3_bucket
-}
-
-output "my_iam_user_complete_details" {
-    value = aws_iam_user.my_iam_user
-}
 
 
 # STATE
