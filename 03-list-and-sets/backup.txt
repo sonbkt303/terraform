@@ -8,7 +8,12 @@ variable "iam_user_name_prefix" {
 }
 
 
-provider "aws" {}
+provider "aws" {
+  region     = "us-east-1"
+  access_key = "AKIAWHMZVV7EM7QNEWPR"
+  secret_key = "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"
+
+}
 
 
 resource "aws_iam_user" "my_iam_user" {
