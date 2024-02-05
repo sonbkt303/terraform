@@ -38,7 +38,7 @@ resource "aws_security_group" "http_server_sg" {
 }
 
 resource "aws_instance" "http_server" {
-  ami                    = "ami-0c7217cdde317cfec"
+  ami                    = "ami-0277155c3f0ab2930"
   key_name               = "evn0031_ec2"
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.http_server_sg.id]
@@ -47,15 +47,15 @@ resource "aws_instance" "http_server" {
   connection {
     type        = "ssh"
     host        = self.public_ip
-    user        = "ubuntu"
+    user        = "ec2-user"
     private_key = file(var.aws_key_pair)
 
   }
 
   provisioner "remote-exec" {
     inline = [
-      #"sudo apt install httpd -y",                                                                            // install httpd
-      # "sudo service httpd start",                                                                             // start
+      "sudo yum install httpd -y",                                                                            // install httpd
+      "sudo service httpd start",                                                                             // start
       "echo Say Hello from Mike - Virtual Server is at ${self.public_dns}| sudo tee /var/www/html/index.html" // copy a file
 
     ]
