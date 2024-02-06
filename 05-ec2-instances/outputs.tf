@@ -3,5 +3,5 @@ output "aws_security_group_http_server_details" {
 }
 
 output "http_server_public" {
-    value = aws_instance.http_server.public_dns
+  value = aws_instance.http_server.public_dns
 }

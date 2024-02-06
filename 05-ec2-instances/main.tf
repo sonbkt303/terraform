@@ -6,9 +6,17 @@ provider "aws" {}
 
 // HTTP Server -> 80 TCP, 22 TCP, CIDR ["0.0.0.0/0"]
 
+resource "aws_default_vpc" "default" {
+
+}
+
+data "aws_subnets" "default_subnets" {
+}
+
 resource "aws_security_group" "http_server_sg" {
-  name   = "http_server_sg"
-  vpc_id = "vpc-aabcfbd0"
+  name = "http_server_sg"
+  # vpc_id = "vpc-aabcfbd0" // Remove hard code
+  vpc_id = aws_default_vpc.default.id
 
   ingress {
     from_port   = 80
@@ -42,7 +50,8 @@ resource "aws_instance" "http_server" {
   key_name               = "evn0031_ec2"
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.http_server_sg.id]
-  subnet_id              = "subnet-91487fcd"
+  # subnet_id            = "subnet-91487fcd"
+  subnet_id = tolist(data.aws_subnets.default_subnets.ids)[0]
 
   connection {
     type        = "ssh"
