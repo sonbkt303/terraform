@@ -11,6 +11,14 @@ resource "aws_s3_bucket" "enterprise_backend_state" {
   }
 }
 
+resource "aws_s3_bucket_public_access_block" "bucket_access_block_example" {
+  bucket = aws_s3_bucket.enterprise_backend_state.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
 
 resource "aws_s3_bucket_versioning" "versioning_example" {
   bucket = aws_s3_bucket.enterprise_backend_state.id
