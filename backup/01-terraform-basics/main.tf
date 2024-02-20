@@ -21,5 +21,5 @@ resource "aws_iam_user" "my_iam_user" {
 # STATE
 # DESIRED - KNOWN - ACTUAL
 
-  access_key = "AKIAWHMZVV7EM7QNEWPR"
-  secret_key = "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"
+#   access_key = "AKIAWHMZVV7EM7QNEWPR"
+#   secret_key = "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"
