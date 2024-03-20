@@ -12,7 +12,7 @@ resource "aws_s3_bucket" "my_s3_bucket" {
   }
 
 
-  force_destroy = false
+  force_destroy       = false
   object_lock_enabled = false
 }
 
