@@ -1,6 +1,9 @@
 provider "aws" {
   region = "us-east-1"
 }
+variable "names" {
+  default = ["ranga", "tom", "jane"]
+}
 
 variable "my_iam_user_prefix" {
   type    = string
@@ -26,7 +29,8 @@ resource "aws_s3_bucket" "my_s3_bucket" {
 }
 
 resource "aws_iam_user" "my_iam_user" {
-  name = "${var.my_iam_user_prefix}_updated"
+  count = length(var.names)
+  name = "${var.environment}_${var.names[count.index]}"
   # path = "/system/test/"
 }
 
