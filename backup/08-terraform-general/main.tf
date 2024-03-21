@@ -2,7 +2,7 @@ provider "aws" {
   region = "us-east-1"
 }
 variable "names" {
-  default = ["ranga", "tom", "jane"]
+  default = ["ravs", "sats", "ranga", "tom", "jane"]
 }
 
 variable "my_iam_user_prefix" {
@@ -29,9 +29,11 @@ resource "aws_s3_bucket" "my_s3_bucket" {
 }
 
 resource "aws_iam_user" "my_iam_user" {
-  count = length(var.names)
-  name = "${var.environment}_${var.names[count.index]}"
+  # count = length(var.names)
+  # name = "${var.environment}_${var.names[count.index]}"
   # path = "/system/test/"
+  for_each = toset(var.names)
+  name = each.value
 }
 
 
