@@ -1,8 +1,21 @@
 provider "aws" {
   region = "us-east-1"
 }
-variable "names" {
-  default = ["ravs", "sats", "ranga", "tom", "jane"]
+variable "users" {
+  # default = ["ravs", "sats", "ranga", "tom", "jane"]
+
+  default = {
+    ravs: {
+      country: "Netherlands",
+    }
+    tom: {
+      country: "US"
+    },
+    jane: {
+      country: "India"
+    }
+    # "India"
+  }
 }
 
 variable "my_iam_user_prefix" {
@@ -32,8 +45,11 @@ resource "aws_iam_user" "my_iam_user" {
   # count = length(var.names)
   # name = "${var.environment}_${var.names[count.index]}"
   # path = "/system/test/"
-  for_each = toset(var.names)
-  name = each.value
+  for_each = var.users
+  name = each.key
+  tags = {
+    country: each.value.country
+  }
 }
 
 

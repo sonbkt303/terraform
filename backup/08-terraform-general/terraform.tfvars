@@ -1,1 +1,0 @@
-instantype = "123123"
