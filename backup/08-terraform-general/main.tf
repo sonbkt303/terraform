@@ -56,7 +56,7 @@ resource "aws_security_group" "http_server_sg" {
 }
 
 resource "aws_instance" "http_server" {
-  ami                    = data.aws_ami.aws-linux-2-latest.id
+  ami = "ami-0c101f26f147fa7fd"
   instance_type          = "t2.micro"
   key_name               = "evn_0031"
   vpc_security_group_ids = [aws_security_group.http_server_sg.id]
