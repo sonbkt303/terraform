@@ -1,5 +1,27 @@
+variable "aws_key_pair" {
+  default = "~/.aws/aws_keys/default-ec2.pem"
+}
+
+
 provider "aws" {
   region = "us-east-1"
+}
+
+resource "aws_default_vpc" "default" {
+
+}
+
+data "aws_subnets" "default_subnets" {
+}
+
+
+data "aws_ami" "aws-linux-2-latest" {
+  most_recent = true
+  owners      = ["amazon"]
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*"]
+  }
 }
 
 
@@ -34,12 +56,28 @@ resource "aws_security_group" "http_server_sg" {
 }
 
 resource "aws_instance" "http_server" {
-  ami = "ami-0c101f26f147fa7fd"
-  instance_type = "t2.micro"
-  key_name = "evn0031_ec2"
-  vpc_security_group_ids=[aws_security_group.http_server_sg.id]
-  subnet_id = "subnet-893203a7"
-  
+  ami                    = data.aws_ami.aws-linux-2-latest.id
+  instance_type          = "t2.micro"
+  key_name               = "evn_0031"
+  vpc_security_group_ids = [aws_security_group.http_server_sg.id]
+  subnet_id = tolist(data.aws_subnets.default_subnets.ids)[0]
+
+  connection {
+    type        = "ssh"
+    host        = self.public_ip
+    user        = "ec2-user"
+    private_key = file(var.aws_key_pair)
+  }
+
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo yum install httpd -y",                                                                            // install httpd
+      "sudo service httpd start",                                                                             // start
+      "echo Say Hello from Mike - Virtual Server is at ${self.public_dns}| sudo tee /var/www/html/index.html" // copy a file
+    ]
+  }
+
 }
 # variable "users" {
 #   # default = ["ravs", "sats", "ranga", "tom", "jane"]

@@ -72,7 +72,6 @@ resource "aws_instance" "http_server" {
       "sudo yum install httpd -y",                                                                            // install httpd
       "sudo service httpd start",                                                                             // start
       "echo Say Hello from Mike - Virtual Server is at ${self.public_dns}| sudo tee /var/www/html/index.html" // copy a file
-
     ]
   }
 }
