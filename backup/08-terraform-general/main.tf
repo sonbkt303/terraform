@@ -132,59 +132,7 @@ resource "aws_instance" "http_servers" {
       "echo Say Hello from Mike - Virtual Server is at ${self.public_dns}| sudo tee /var/www/html/index.html" // copy a file
     ]
   }
-
 }
-# variable "users" {
-#   # default = ["ravs", "sats", "ranga", "tom", "jane"]
-
-#   default = {
-#     ravs: {
-#       country: "Netherlands",
-#     }
-#     tom: {
-#       country: "US"
-#     },
-#     jane: {
-#       country: "India"
-#     }
-#     # "India"
-#   }
-# }
-
-# variable "my_iam_user_prefix" {
-#   type    = string
-#   default = "my_iam_user"
-# }
-
-# variable "environment" {
-#   default = "dev"
-# }
-
-# # plan - execute
-# resource "aws_s3_bucket" "my_s3_bucket" {
-#   bucket = "my-s3-bucket-coconut-bucket-0809"
-
-#   tags = {
-#     Name        = "My bucket"
-#     Environment = "Dev"
-#   }
-
-
-#   force_destroy       = false
-#   object_lock_enabled = false
-# }
-
-# resource "aws_iam_user" "my_iam_user" {
-#   # count = length(var.names)
-#   # name = "${var.environment}_${var.names[count.index]}"
-#   # path = "/system/test/"
-#   for_each = var.users
-#   name = each.key
-#   tags = {
-#     country: each.value.country
-#   }
-# }
-
 
 
 # STATE
