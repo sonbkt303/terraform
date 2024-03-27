@@ -2,10 +2,19 @@ variable "aws_key_pair" {
   default = "~/.aws/aws_keys/default-ec2.pem"
 }
 
-
-provider "aws" {
-  region = "us-east-1"
+variable "application_name" {
+  default = "07-backend-state"
 }
+
+variable "project_name" {
+  default = "users"
+}
+
+variable "enviroment" {
+  default = "dev"
+}
+
+
 
 resource "aws_default_vpc" "default" {
 
@@ -15,126 +24,176 @@ data "aws_subnets" "default_subnets" {
 }
 
 
-data "aws_ami" "aws-linux-2-latest" {
-  most_recent = true
-  owners      = ["amazon"]
-  filter {
-    name   = "name"
-    values = ["amzn2-ami-hvm-*"]
-  }
-}
+# data "aws_ami" "aws-linux-2-latest" {
+#   most_recent = true
+#   owners      = ["amazon"]
+#   filter {
+#     name   = "name"
+#     values = ["amzn2-ami-hvm-*"]
+#   }
+# }
 
-resource "aws_security_group" "http_server_sg" {
-  name = "http_server_sg"
-  //vpc_id = "vpc-c49ff1be"
-  vpc_id = aws_default_vpc.default.id
+# resource "aws_security_group" "http_server_sg" {
+#   name = "http_server_sg"
+#   //vpc_id = "vpc-c49ff1be"
+#   vpc_id = aws_default_vpc.default.id
 
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+#   ingress {
+#     from_port   = 80
+#     to_port     = 80
+#     protocol    = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
 
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+#   ingress {
+#     from_port   = 22
+#     to_port     = 22
+#     protocol    = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = -1
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+#   egress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = -1
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
 
-  tags = {
-    name = "http_server_sg"
-  }
-}
-
-
-resource "aws_security_group" "elb_sg" {
-  name   = "elb_sg"
-  vpc_id = "vpc-aabcfbd0"
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # ingress {
-  #   from_port   = 22
-  #   to_port     = 22
-  #   protocol    = "tcp"
-  #   cidr_blocks = ["0.0.0.0/0"]
-  # }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = -1
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
+#   tags = {
+#     name = "http_server_sg"
+#   }
+# }
 
 
-resource "aws_elb" "elb" {
-  name = "elb"
-  subnets = data.aws_subnets.default_subnets.ids
-  security_groups = [aws_security_group.elb_sg.id]
-  instances = values(aws_instance.http_servers).*.id
+# resource "aws_security_group" "elb_sg" {
+#   name   = "elb_sg"
+#   vpc_id = "vpc-aabcfbd0"
 
-  listener {
-    instance_port = 80
-    instance_protocol = "http"
-    lb_port = 80
-    lb_protocol = "http"
-  }
-}
+#   ingress {
+#     from_port   = 80
+#     to_port     = 80
+#     protocol    = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
 
+#   # ingress {
+#   #   from_port   = 22
+#   #   to_port     = 22
+#   #   protocol    = "tcp"
+#   #   cidr_blocks = ["0.0.0.0/0"]
+#   # }
 
-
-resource "aws_instance" "http_servers" {
-  ami                    = "ami-0c101f26f147fa7fd"
-  instance_type          = "t2.micro"
-  key_name               = "default_ec2"
-  vpc_security_group_ids = [aws_security_group.http_server_sg.id]
-  # subnet_id = tolist(data.aws_subnets.default_subnets.ids)[0]
-
-  for_each = toset(data.aws_subnets.default_subnets.ids)
-
-
-  # subnet_id = tolist(data.aws_subnets.default_subnets.ids)[0]
-  subnet_id = each.value
-
-  tags = {
-    name : "http_server_${each.key}"
-  }
+#   egress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = -1
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+# }
 
 
-  connection {
-    type        = "ssh"
-    host        = self.public_ip
-    user        = "ec2-user"
-    private_key = file(var.aws_key_pair)
-  }
+# resource "aws_elb" "elb" {
+#   name = "elb"
+#   subnets = data.aws_subnets.default_subnets.ids
+#   security_groups = [aws_security_group.elb_sg.id]
+#   instances = values(aws_instance.http_servers).*.id
+
+#   listener {
+#     instance_port = 80
+#     instance_protocol = "http"
+#     lb_port = 80
+#     lb_protocol = "http"
+#   }
+# }
 
 
-  provisioner "remote-exec" {
-    inline = [
-      "sudo yum install httpd -y",                                                                            // install httpd
-      "sudo service httpd start",                                                                             // start
-      "echo Say Hello from Mike - Virtual Server is at ${self.public_dns}| sudo tee /var/www/html/index.html" // copy a file
-    ]
-  }
-}
+
+# resource "aws_instance" "http_servers" {
+#   ami                    = "ami-0c101f26f147fa7fd"
+#   instance_type          = "t2.micro"
+#   key_name               = "default_ec2"
+#   vpc_security_group_ids = [aws_security_group.http_server_sg.id]
+#   # subnet_id = tolist(data.aws_subnets.default_subnets.ids)[0]
+
+#   for_each = toset(data.aws_subnets.default_subnets.ids)
+
+
+#   # subnet_id = tolist(data.aws_subnets.default_subnets.ids)[0]
+#   subnet_id = each.value
+
+#   tags = {
+#     name : "http_server_${each.key}"
+#   }
+
+
+#   connection {
+#     type        = "ssh"
+#     host        = self.public_ip
+#     user        = "ec2-user"
+#     private_key = file(var.aws_key_pair)
+#   }
+
+
+#   provisioner "remote-exec" {
+#     inline = [
+#       "sudo yum install httpd -y",                                                                            // install httpd
+#       "sudo service httpd start",                                                                             // start
+#       "echo Say Hello from Mike - Virtual Server is at ${self.public_dns}| sudo tee /var/www/html/index.html" // copy a file
+#     ]
+#   }
+# }
+
+// S3 B
 
 
 # STATE
 # DESIRED - KNOWN - ACTUAL
 
+
+terraform {
+  backend "s3" {
+    bucket = "value"
+    # key = "${var.application_name}-${var.project_name}-${var.enviroment}"
+    key = "07-backend-state-users-dev"
+    region = "us-east-1"
+    dynamodb_table = "dev_application_locks"
+    encrypt = true
+  }
+}
+
+provider "aws" {
+  region = "us-east-1"
+}
+
+
+resource "aws_s3_bucket" "enterprise_backend_state" {
+  bucket = "dev-applications-backend-state"
+  lifecycle {
+    prevent_destroy = false
+  }
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+}
+
+resource "aws_iam_user" "my_iam_user" {
+  name = "my_iam_user"
+}
+
+resource "aws_dynamodb_table" "enterprise_backend_lock" {
+  name = "dev_application_locks"
+
+  billing_mode = "PAY_PER_REQUEST"
+
+  hash_key = "LockID"
+
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+}
