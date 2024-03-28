@@ -15,13 +15,12 @@ variable "enviroment" {
 }
 
 
+# resource "aws_default_vpc" "default" {
 
-resource "aws_default_vpc" "default" {
+# }
 
-}
-
-data "aws_subnets" "default_subnets" {
-}
+# data "aws_subnets" "default_subnets" {
+# }
 
 
 # data "aws_ami" "aws-linux-2-latest" {
@@ -149,10 +148,9 @@ data "aws_subnets" "default_subnets" {
 # STATE
 # DESIRED - KNOWN - ACTUAL
 
-
 terraform {
   backend "s3" {
-    bucket = "value"
+    bucket = "dev-applications-backend-state-1"
     # key = "${var.application_name}-${var.project_name}-${var.enviroment}"
     key = "07-backend-state-users-dev"
     region = "us-east-1"
@@ -167,18 +165,19 @@ provider "aws" {
 
 
 resource "aws_s3_bucket" "enterprise_backend_state" {
-  bucket = "dev-applications-backend-state"
+  bucket = "dev-applications-backend-state-1"
   lifecycle {
     prevent_destroy = false
   }
+  force_destroy = true
 
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
+  # server_side_encryption_configuration {
+  #   rule {
+  #     apply_server_side_encryption_by_default {
+  #       sse_algorithm = "AES256"
+  #     }
+  #   }
+  # }
 }
 
 resource "aws_iam_user" "my_iam_user" {
@@ -197,3 +196,6 @@ resource "aws_dynamodb_table" "enterprise_backend_lock" {
     type = "S"
   }
 }
+
+
+
