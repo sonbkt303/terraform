@@ -148,16 +148,16 @@ variable "enviroment" {
 # STATE
 # DESIRED - KNOWN - ACTUAL
 
-terraform {
-  backend "s3" {
-    bucket = "dev-applications-backend-state-1"
-    # key = "${var.application_name}-${var.project_name}-${var.enviroment}"
-    key = "07-backend-state-users-dev"
-    region = "us-east-1"
-    dynamodb_table = "dev_application_locks"
-    encrypt = true
-  }
-}
+# terraform {
+#   backend "s3" {
+#     bucket = "dev-applications-backend-state-1"
+#     # key = "${var.application_name}-${var.project_name}-${var.enviroment}"
+#     key = "07-backend-state-users-dev"
+#     region = "us-east-1"
+#     dynamodb_table = "dev_application_locks"
+#     encrypt = true
+#   }
+# }
 
 provider "aws" {
   region = "us-east-1"
@@ -180,9 +180,9 @@ resource "aws_s3_bucket" "enterprise_backend_state" {
   # }
 }
 
-resource "aws_iam_user" "my_iam_user" {
-  name = "my_iam_user"
-}
+# resource "aws_iam_user" "my_iam_user" {
+#   name = "my_iam_user"
+# }
 
 resource "aws_dynamodb_table" "enterprise_backend_lock" {
   name = "dev_application_locks"
