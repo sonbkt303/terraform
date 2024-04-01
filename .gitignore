@@ -8,8 +8,10 @@ node_modules
 .terraform
 *.tfstate.backup
 *.tfstate
+plan.*
 
 # IDEs and editors
 /.idea
 .project
 .classpath
+
