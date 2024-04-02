@@ -2,17 +2,6 @@ variable "aws_key_pair" {
   default = "~/.aws/aws_keys/default-ec2.pem"
 }
 
-variable "application_name" {
-  default = "07-backend-state"
-}
-
-variable "project_name" {
-  default = "users"
-}
-
-variable "enviroment" {
-  default = "dev"
-}
 
 
 # resource "aws_default_vpc" "default" {
@@ -180,9 +169,6 @@ resource "aws_s3_bucket" "enterprise_backend_state" {
   # }
 }
 
-# resource "aws_iam_user" "my_iam_user" {
-#   name = "my_iam_user"
-# }
 
 resource "aws_dynamodb_table" "enterprise_backend_lock" {
   name = "dev_application_locks"
