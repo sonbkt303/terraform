@@ -75,7 +75,12 @@ resource "aws_instance" "ansible_server" {
   }
 
   provisioner "local-exec" {
+    command = "echo ${self.public_ip} >> public_ip.txt"
+  }
+
+  provisioner "local-exec" {
     command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ubuntu --key-file ansible.pem -T 300 -i '${self.public_ip},', playbook.yaml"
+    on_failure = fail
   }
 
   tags = {
